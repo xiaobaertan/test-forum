@@ -1,0 +1,48 @@
+<%- include('../layout/header.ejs') %>
+
+    <link rel="stylesheet" href="/node_modules/mditor/dist/css/mditor.min.css">
+    <script src="/node_modules/mditor/dist/js/mditor.min.js"></script>
+    <div class="container">
+        <h1>文章添加页</h1>
+        <hr>
+        <form action="" id="form">
+            <!-- 在进入文章添加页面的一瞬间 就立即把文章的作者ID 保存到一个隐藏域中 方式 session失效的问题 -->
+            <input type="hidden" name="authorId" value="<%=user.id%>">
+            <div class="form-group">
+                <label for="">文章标题: </label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="">文章内容: </label>
+                <textarea name="content" class="form-control" id="editor"></textarea>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="发表文章">
+            </div>
+        </form>
+    </div>
+    <script>
+        $(function() {
+            var mditor = Mditor.fromTextarea(document.getElementById('editor'));
+
+            $("#form").on("submit", (e) => {
+                e.preventDefault();
+                $.ajax({
+                    url: '/article/add',
+                    type: 'post',
+                    data: $("#form").serialize(),
+                    dataType: 'json',
+                    success: function(res) {
+                        console.log(res);
+                        if (res.status !== 200) return alert('发表文章失败!')
+                        location.href = '/article/info/' + res.insertId;
+
+                    }
+                })
+            })
+        })
+    </script>
+
+    <%- include('../layout/footer.ejs') %>
